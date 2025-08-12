@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Employee Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .btn {
+            padding: 5px 10px;
+            margin: 2px;
+            cursor: pointer;
+        }
+
+
+        .edit-btn {
+            background-color: #ffc107;
+            color: white
+        }
+
+        .delete-btn {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .add-btn {
+            margin: 20px 0;
+            padding: 10px 20px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+        }
+
+        .form-container {
+            margin-top: 20px;
+        }
+
+        input {
+            margin: 5px 0;
+            padding: 8px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Employee Management System</h2>
+
+    <!-- Add Employee Button -->
+    <button class="add-btn" onclick="showForm()">Add Employee</button>
+
+    <!-- Employee Form (Hidden Initially) -->
+    <div class="form-container" id="employeeForm" style="display: none;">
+        <h3 id="formTitle">Add Employee</h3>
+
+        <input type="hidden" id="employeeId">
+        <label>Name: <input type="text" id="name" required></label><br>
+        <label>Email: <input type="email" id="email" required></label><br>
+        <label>Phone: <input type="text" id="phone" required></label><br>
+        <label>Joining Date: <input type="date" id="joiningDate" required></label><br>
+        <label>Department: <input type="text" id="department" required></label><br>
+        <label>Designation: <input type="text" id="designation" required></label><br>
+
+        <button class="btn" onclick="saveEmployee()">Save Employee</button>
+        <button class="btn" onclick="hideForm()">Cancel</button>
+    </div>
+
+    <!-- Employee Table -->
+    <table id="employeeTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Joining Date</th>
+                <th>Department</th>
+                <th>Designation</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Employees will be added here dynamically -->
+        </tbody>
+    </table>
+
+    <script>
+        // Store employee data temporarily
+        let employees = [];
+        let employeeIdCounter = 1;
+
+        // Show Employee Form
+        function showForm(id = null) {
+            const form = document.getElementById('employeeForm');
+            form.style.display = 'block';
+
+            if (id !== null) {
+                const employee = employees.find(emp => emp.id === id);
+                document.getElementById('formTitle').innerText = 'Edit Employee';
+                document.getElementById('employeeId').value = employee.id;
+                document.getElementById('name').value = employee.name;
+                document.getElementById('email').value = employee.email;
+                document.getElementById('phone').value = employee.phone;
+                document.getElementById('joiningDate').value = employee.joiningDate;
+                document.getElementById('department').value = employee.department;
+                document.getElementById('designation').value = employee.designation;
+            } else {
+                resetForm();
+                document.getElementById('formTitle').innerText = 'Add Employee';
+            }
+        }
+        // Reset Form
+        function resetForm() {
+            document.getElementById('employeeId').value = '';
+            document.getElementById('name').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('phone').value = '';
+            document.getElementById('joiningDate').value = '';
+            document.getElementById('department').value = '';
+            document.getElementById('designation').value = '';
+        }
+        
+        
+        // Save or Update Employee
+        function saveEmployee() 
+        {
+            const id = document.getElementById('employeeId').value;
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const joiningDate = document.getElementById('joiningDate').value;
+            const department = document.getElementById('department').value;
+            const designation = document.getElementById('designation').value;
+
+            if (!name || !email || !phone || !joiningDate || !department || !designation) {
+                alert('Please fill all fields!');
+                return;
+            }
+
+            if (id) {
+                // Update existing employee
+                const employeeIndex = employees.findIndex(emp => emp.id == id);
+                employees[employeeIndex] = { id: Number(id), name, email, phone, joiningDate, department, designation };
+            } else {
+                // Add new employee
+                employees.push({ id: employeeIdCounter++, name, email, phone, joiningDate, department, designation });
+            }
+            
+            hideForm();
+            renderEmployees();
+        }
+        
+        
+                // Hide Employee Form
+                function hideForm() {
+                    document.getElementById('employeeForm').style.display = 'none';
+                    resetForm();
+                }
+                
+        // Render Employee List
+        function renderEmployees()
+        {
+            const tbody = document.querySelector('#employeeTable tbody');
+            tbody.innerHTML = '';
+
+            employees.forEach(employee => {
+                const row = `<tr>
+                    <td>${employee.id}</td>
+                    <td>${employee.name}</td>
+                    <td>${employee.email}</td>
+                    <td>${employee.phone}</td>
+                    <td>${employee.joiningDate}</td>
+                    <td>${employee.department}</td>
+                    <td>${employee.designation}</td>
+                    <td>
+                        <button class="btn edit-btn" onclick="showForm(${employee.id})">Edit</button>
+                        <button class="btn delete-btn" onclick="deleteEmployee(${employee.id})">Delete</button>
+                    </td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+        }
+
+        // Delete Employee
+        function deleteEmployee(id) {
+            employees = employees.filter(emp => emp.id !== id);
+            renderEmployees();
+
+        }
+
+    </script>
+
+</body>
+
+</html>
